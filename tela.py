@@ -22,11 +22,11 @@ co7 = "#3fbfb9"
 co8 = "#263238"
 co9 = "e9edf5"
 co10 = "#6e8faf"
-co10 = "#f2f4f2"
+co11 = "#f2f4f2"
 
 janela = Tk()
 janela.title("")
-janela.geometry('770x330')
+janela.geometry('800x600')
 janela.configure(background=co1)
 janela.resizable(width=False, height=False)
 
@@ -90,7 +90,7 @@ def novo_usuario():
         e_sobrenome.delete(0,END)
         e_endereco.delete(0,END)
         e_email.delete(0,END)
-        e_p_nome.delete(0,END)
+        e_numero.delete(0,END)
 
 
     app_ = Label(frameDireita, text="Inserir um novo usuário", width=50, compound=LEFT, padx=5, pady=10, font=("verdana 12 "), bg=co1, fg=co4)
@@ -190,8 +190,9 @@ def novo_livro():
         publisher = e_ano.get()
         year = e_ano.get()
         isbn = e_isbn.get()
+        valor = e_valor.get()
 
-        lista = [title, autor, publisher, year, isbn]
+        lista = [title, autor, publisher, year, isbn, valor]
 
         #verificando caso algum campo esteja em branco
         for i in lista:
@@ -200,7 +201,7 @@ def novo_livro():
                 return
         
         #inserindo os dados no bd
-        insert_book(title, autor, publisher, year, isbn)
+        insert_book(title, autor, publisher, year, isbn, valor)
 
         messagebox.showinfo('Sucesso', 'Livro inserido com sucesso')
 
@@ -210,6 +211,8 @@ def novo_livro():
         e_editora.delete(0,END)
         e_ano.delete(0,END)
         e_isbn.delete(0,END)
+        e_valor.delete(0,END)
+
         
 
     app_ = Label(frameDireita, text="Inserir um Novo livro", width=50, compound=LEFT, padx=5, pady=10, relief=FLAT, anchor=NW, font=('Verdana 12'), bg=co1, fg=co4)
@@ -248,33 +251,41 @@ def novo_livro():
     e_isbn = Entry(frameDireita, width=25, justify='left', relief="solid")
     e_isbn.grid(row=6, column=1, padx=5, pady=10, sticky=NSEW)
 
+    #valor
+    l_valor = Label(frameDireita, text="Valor do livro:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_valor.grid(row=7, column=0, padx=5, pady=10, sticky=NSEW)
+    e_valor = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_valor.grid(row=7, column=1, padx=5, pady=10, sticky=NSEW)
+
     #botao de salvar
     img_salvar = Image.open('save.png')
     img_salvar = img_salvar.resize((18,18))
     img_salvar = ImageTk.PhotoImage(img_salvar)
     b_salvar = Button(frameDireita, command=add, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
-    b_salvar.grid(row=7, column=1, pady=10, sticky=NSEW)
+    b_salvar.grid(row=8, column=1, pady=10, sticky=NSEW)
 
 #ver livros
 def ver_livros():
+    # Cabeçalho da seção de livros
     app_ = Label(frameDireita, text="Todos os livros", width=50, compound=LEFT, padx=5, pady=10, relief=FLAT, anchor=NW, font=('Verdana 12'), bg=co1, fg=co4)
     app_.grid(row=0, column=0, columnspan=3, sticky=NSEW)
-    l_linha = Label(frameDireita, width=400, height=1,anchor=NW, font=('Verdana 1 '), bg=co3, fg=co1)
+
+    l_linha = Label(frameDireita, width=400, height=1, anchor=NW, font=('Verdana 1'), bg=co3, fg=co1)
     l_linha.grid(row=1, column=0, columnspan=3, sticky=NSEW)
 
-    dados = exibir_livros()
+    # Obtendo os dados dos livros e o valor total do estoque
+    livros, total_estoque = exibir_livros()
 
-    #creating a treeview with dual scrollbars
-    list_header = ['ID','Título','Autor','Editora','Ano','IBSN']
+    # Criando o Treeview com barras de rolagem
+    list_header = ['ID', 'Título', 'Autor', 'Editora', 'Ano', 'ISBN', 'Valor']
     
     global tree
-
     tree = ttk.Treeview(frameDireita, selectmode="extended", columns=list_header, show="headings")
-   
-    #vertical scrollbar
+
+    # Barra de rolagem vertical
     vsb = ttk.Scrollbar(frameDireita, orient="vertical", command=tree.yview)
 
-    #horizontal scrollbar
+    # Barra de rolagem horizontal
     hsb = ttk.Scrollbar(frameDireita, orient="horizontal", command=tree.xview)
 
     tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
@@ -284,19 +295,24 @@ def ver_livros():
     hsb.grid(column=0, row=3, sticky='ew')
     frameDireita.grid_rowconfigure(0, weight=12)
 
-    hd=["nw","nw","nw","nw","nw","nw"]
-    h=[20,165,110,100,50,50,100]
-    n=0
+    # Definindo o alinhamento e largura das colunas
+    hd = ["nw", "nw", "nw", "nw", "nw", "nw", "nw"]
+    h = [20, 165, 110, 100, 50, 100, 80]  # Largura das colunas
+    n = 0
 
+    # Configurando os cabeçalhos e colunas
     for col in list_header:
         tree.heading(col, text=col, anchor='nw')
-        #adjust the column's width to the header string
-        tree.column(col, width=h[n],anchor=hd[n])
-        
-        n+=1
+        tree.column(col, width=h[n], anchor=hd[n])
+        n += 1
 
-    for item in dados:
+    # Inserindo os dados dos livros no Treeview
+    for item in livros:
         tree.insert('', 'end', values=item)
+
+    # Exibindo o valor total do estoque
+    total_label = Label(frameDireita, text=f"Valor total do inventário: R$ {total_estoque:.2f}", font=('Verdana 10 bold'), bg=co1, fg=co4)
+    total_label.grid(row=4, column=0, columnspan=3, pady=10, sticky=NSEW)
 
 #realizar um emprestimo
 def realizar_emprestimo():
@@ -358,7 +374,7 @@ def ver_livros_emprestados():
 
     dados = []
 
-    books_on_loan = geet_books_on_loan()
+    books_on_loan = get_books_on_loan()
 
     for book in books_on_loan:
         dado = [f"{book[0]}", f"{book[1]}", f" {book[2]} {book[3]}", f"{book[4]}", f"{book[5]}" ]
@@ -447,17 +463,6 @@ def devolucao_emprestimo():
     img_salvar = ImageTk.PhotoImage(img_salvar)
     b_salvar = Button(frameDireita, command=add, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
     b_salvar.grid(row=7, column=1, pady=10, sticky=NSEW)
-
-
-
-
-
-
-
-
-
-
-
 
 
 #funcao para controlar o menu
