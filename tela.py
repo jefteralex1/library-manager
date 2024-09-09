@@ -47,7 +47,7 @@ frameDireita.grid(row=1, column=1, sticky=NSEW)
 
 #logo
 #abrindo a imagem
-app_img = Image.open('book.png')
+app_img = Image.open('img/book.png')
 app_img = app_img.resize((40,40))
 app_img = ImageTk.PhotoImage(app_img)
 
@@ -130,7 +130,7 @@ def novo_usuario():
     e_numero.grid(row=6, column=1, padx=5, pady=10, sticky=NSEW)
 
     #botao de salvar
-    img_salvar = Image.open('save.png')
+    img_salvar = Image.open('img/save.png')
     img_salvar = img_salvar.resize((18,18))
     img_salvar = ImageTk.PhotoImage(img_salvar)
     b_salvar = Button(frameDireita, command=add, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
@@ -258,7 +258,7 @@ def novo_livro():
     e_valor.grid(row=7, column=1, padx=5, pady=10, sticky=NSEW)
 
     #botao de salvar
-    img_salvar = Image.open('save.png')
+    img_salvar = Image.open('img/save.png')
     img_salvar = img_salvar.resize((18,18))
     img_salvar = ImageTk.PhotoImage(img_salvar)
     b_salvar = Button(frameDireita, command=add, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
@@ -359,7 +359,7 @@ def realizar_emprestimo():
     e_id_livro.grid(row=3, column=1, padx=5, pady=5, sticky=NSEW)
 
     #botao de salvar
-    img_salvar = Image.open('save.png')
+    img_salvar = Image.open('img/save.png')
     img_salvar = img_salvar.resize((18,18))
     img_salvar = ImageTk.PhotoImage(img_salvar)
     b_salvar = Button(frameDireita, command=add, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
@@ -458,7 +458,7 @@ def devolucao_emprestimo():
     e_data_retorno.grid(row=3, column=1, padx=5, pady=5, sticky=NSEW)
 
     #botao de salvar
-    img_salvar = Image.open('save.png')
+    img_salvar = Image.open('img/save.png')
     img_salvar = img_salvar.resize((18,18))
     img_salvar = ImageTk.PhotoImage(img_salvar)
     b_salvar = Button(frameDireita, command=add, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
@@ -520,49 +520,49 @@ def control(i):
  
 #Menu
 #novo usuario
-img_usuario = Image.open('add.png')
+img_usuario = Image.open('img/add.png')
 img_usuario = img_usuario.resize((18,18))
 img_usuario = ImageTk.PhotoImage(img_usuario)
 b_usuario = Button(frameEsquerda, command=lambda:control('novo_usuario'),  image=img_usuario, compound=LEFT, anchor=NW, text=" Novo usuário", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
 b_usuario.grid(row=0, column=0, sticky=NSEW, padx=5, pady=6)
 
 #novo livro
-img_novo_livro = Image.open('add.png')
+img_novo_livro = Image.open('img/add.png')
 img_novo_livro = img_novo_livro.resize((18,18))
 img_novo_livro = ImageTk.PhotoImage(img_novo_livro)
 b_novo_livro = Button(frameEsquerda, command=lambda:control('novo_livro'), image=img_novo_livro, compound=LEFT, anchor=NW, text=" Novo Livro", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
 b_novo_livro.grid(row=1, column=0, sticky=NSEW, padx=5, pady=6)
 
 #Ver livros
-img_ver_livro = Image.open('book.png')
+img_ver_livro = Image.open('img/book.png')
 img_ver_livro = img_ver_livro.resize((18,18))
 img_ver_livro = ImageTk.PhotoImage(img_ver_livro)
 b_ver_livro = Button(frameEsquerda, command=lambda:control('ver_livro'), image=img_ver_livro, compound=LEFT, anchor=NW, text=" Exibir todos os Livro", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
 b_ver_livro.grid(row=2, column=0, sticky=NSEW, padx=5, pady=6)
 
 #Ver usuarios
-img_ver_usuarios = Image.open('user.png')
+img_ver_usuarios = Image.open('img/user.png')
 img_ver_usuarios = img_ver_usuarios.resize((18,18))
 img_ver_usuarios = ImageTk.PhotoImage(img_ver_usuarios)
 b_ver_usuarios = Button(frameEsquerda, image=img_ver_usuarios, command=lambda:control('ver_usuarios'), compound=LEFT, anchor=NW, text=" Exibir todos os usuarios", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
 b_ver_usuarios.grid(row=3, column=0, sticky=NSEW, padx=5, pady=6)
 
 #Realizar emprestimo
-img_emprestimo = Image.open('purchase.png')
+img_emprestimo = Image.open('img/purchase.png')
 img_emprestimo = img_emprestimo.resize((18,18))
 img_emprestimo = ImageTk.PhotoImage(img_emprestimo)
 b_emprestimo = Button(frameEsquerda, command=lambda:control('emprestimo'), image=img_emprestimo, compound=LEFT, anchor=NW, text=" Realizar um emprestimo", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
 b_emprestimo.grid(row=4, column=0, sticky=NSEW, padx=5, pady=6)
 
 #Realizar devolucao
-img_devolucao = Image.open('update.png')
+img_devolucao = Image.open('img/update.png')
 img_devolucao = img_devolucao.resize((18,18))
 img_devolucao = ImageTk.PhotoImage(img_devolucao)
 b_devolucao = Button(frameEsquerda, command=lambda:control('retorno'), image=img_devolucao, compound=LEFT, anchor=NW, text=" Devolucao de um emprestimo", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
 b_devolucao.grid(row=5, column=0, sticky=NSEW, padx=5, pady=6)
 
 #Ver livros emprestados
-img_livros_emprestados = Image.open('purchase.png')
+img_livros_emprestados = Image.open('img/purchase.png')
 img_livros_emprestados = img_livros_emprestados.resize((18,18))
 img_livros_emprestados = ImageTk.PhotoImage(img_livros_emprestados)
 b_livros_emprestados = Button(frameEsquerda, command=lambda:control('ver_livros_emprestado'), image=img_livros_emprestados, compound=LEFT, anchor=NW, text=" Livros emprestados no momento", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
