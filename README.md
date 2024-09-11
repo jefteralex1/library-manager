@@ -57,14 +57,5 @@ Este projeto é um sistema de gerenciamento de livros desenvolvido com a bibliot
    python main.py
 
 
-## Estrutura de Diretórios
-
-├── dados.py              # Cria o banco de dados
-├── tela.py               # Código principal do sistema
-├── view.py               # Funções para manipulação de dados
-├── img/                  # Diretório contendo as imagens usadas na interface
-│   ├── book.png
-│   └── save.png
-└── README.md             # Documento de descrição do projeto
-Contato
-Para mais informações ou suporte, entre em contato com o desenvolvedor através de [seu-email@dominio.com].
+## Contato
+Para mais informações ou suporte, entre em contato com o desenvolvedor através de [jefteralexandre73@gmail.com].
