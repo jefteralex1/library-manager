@@ -4,21 +4,54 @@ import sqlite3  # Importando a biblioteca de banco de dados
 def connect():
     return sqlite3.connect('dados.db')
 
-# Função para inserir novo livro
-def insert_book(titulo, autor, editora, ano_publicacao, isbn, valor):
+# Função para obter o papel do usuário pelo email
+def get_user_role(email):
+    with connect() as conn:
+        c = conn.cursor()
+        c.execute("SELECT papel FROM usuarios WHERE email = ?", (email,))
+        result = c.fetchone()
+    return result[0] if result else None  # Retorna o papel ou None se o usuário não for encontrado
+
+# Função para inserir novo livro (Apenas Admin)
+def insert_book(titulo, autor, editora, ano_publicacao, isbn, valor, email_usuario):
+    papel = get_user_role(email_usuario)
+    if papel != 'admin':
+        print("Acesso negado! Apenas administradores podem inserir novos livros.")
+        return
+
     with connect() as conn:
         conn.execute(
-            "INSERT INTO livros(titulo, autor, editora, ano_publicacao, isbn, valor) VALUES (?, ?, ?, ?, ?, ?)",
+            "INSERT INTO livros (titulo, autor, editora, ano_publicacao, isbn, valor) VALUES (?, ?, ?, ?, ?, ?)",
             (titulo, autor, editora, ano_publicacao, isbn, valor),
         )
         conn.commit()
+        print("Livro inserido com sucesso!")
+
+# Função para deletar um livro (Apenas Admin)
+def delete_book_by_isbn(isbn, email_usuario):
+    papel = get_user_role(email_usuario)
+    if papel != 'admin':
+        print("Acesso negado! Apenas administradores podem deletar livros.")
+        return
+    
+    with connect() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''DELETE FROM livros WHERE isbn = ?''', (isbn,))
+        
+        if cursor.rowcount > 0:
+            print("Livro deletado com sucesso!")
+        else:
+            print("Livro não encontrado.")
+        
+        conn.commit()
+
 
 # Função para inserir usuários
-def insert_user(nome, sobrenome, endereco, email, telefone):
+def insert_user(nome, sobrenome, endereco, email, telefone, senha, papel):
     with connect() as conn:
         conn.execute(
-            "INSERT INTO usuarios(nome, sobrenome, endereco, email, telefone) VALUES(?, ?, ?, ?, ?)",
-            (nome, sobrenome, endereco, email, telefone),
+            "INSERT INTO usuarios(nome, sobrenome, endereco, email, telefone, senha, papel) VALUES(?, ?, ?, ?, ?, ?, ?)",
+            (nome, sobrenome, endereco, email, telefone, senha, papel),
         )
         conn.commit()
 
@@ -26,9 +59,11 @@ def insert_user(nome, sobrenome, endereco, email, telefone):
 def get_users():
     with connect() as conn:
         c = conn.cursor()
-        c.execute("SELECT * FROM usuarios")
+        # Selecionando apenas os campos desejados
+        c.execute("SELECT id, nome, sobrenome, endereco, email, telefone, papel FROM usuarios ORDER BY nome ASC")
         users = c.fetchall()
     return users
+
 
 # Função para exibir livros e total do estoque
 def exibir_livros():
@@ -76,3 +111,16 @@ def inventario():
             "SELECT SUM(valor) AS total_estoque FROM livros"
         ).fetchone()
     return result[0] if result[0] is not None else 0  # Retorna 0 se o resultado for None
+
+def validar_login(usuario, senha):
+    # Verifica se o usuário é o "mestre"
+    if usuario == "admin" and senha == "senhadomestre":
+        return True  # Login bem-sucedido para o usuário mestre
+
+    with connect() as conn:
+        c = conn.cursor()
+        # Verifica se o usuário e a senha (hashed) existem no banco de dados
+        c.execute("SELECT * FROM usuarios WHERE nome=? AND senha=?", (usuario, senha))
+        result = c.fetchone()
+    
+    return result is not None  

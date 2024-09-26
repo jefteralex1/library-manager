@@ -3,10 +3,7 @@ from tkinter import *
 from tkinter import Tk, ttk
 from PIL import Image, ImageTk
 from tkinter import messagebox
-from datetime import date
-from datetime import datetime
-
-#importando as funcoes da view
+from datetime import date, datetime
 from view import *
 
 hoje = datetime.today()
@@ -18,49 +15,9 @@ co3 = "#38576b"
 co4 = "#403d3d"
 co5 = "#e06636"
 co6 = "#E9A178"
-co7 = "#3fbfb9"
-co8 = "#263238"
-co9 = "e9edf5"
-co10 = "#6e8faf"
-co11 = "#f2f4f2"
-
-janela = Tk()
-janela.title("")
-janela.geometry('800x600')
-janela.configure(background=co1)
-janela.resizable(width=False, height=False)
-
-style = Style(janela)
-style.theme_use("clam")
-
-#frames
-
-frameCima = Frame(janela, width=770, height=50, bg=co6, relief="flat")
-frameCima.grid(row=0, column=0, columnspan=2, sticky=NSEW)
-
-frameEsquerda = Frame(janela, width=150, height=265, bg=co4, relief="solid")
-frameEsquerda.grid(row=1, column=0, sticky=NSEW)
-
-frameDireita = Frame(janela, width=600, height=265, bg=co1, relief="raised")
-frameDireita.grid(row=1, column=1, sticky=NSEW)
 
 
-#logo
-#abrindo a imagem
-app_img = Image.open('img/book.png')
-app_img = app_img.resize((40,40))
-app_img = ImageTk.PhotoImage(app_img)
-
-app_logo = Label(frameCima, image=app_img, width=1000, compound=LEFT, padx=5, anchor=NW, fg=co1, bg=co6)
-app_logo.place(x=5, y=0)
-
-app_ = Label(frameCima, text="Sistema de Gerenciamento de Livros", compound=LEFT, padx=5, anchor = NW, fg=co1, bg=co6, font=("Verdana 15 bold"))
-app_.place(x=50, y=7)
-
-app_linha = Label(frameCima, width=770, height=1, padx=5, anchor=NW, font=("Verdana"), fg=co1, bg=co3)
-app_linha.place(x=0, y=47)
-
-#novo usuario
+# função de criar novo usuario
 def novo_usuario():
 
     global img_salvar
@@ -71,8 +28,11 @@ def novo_usuario():
         adress = e_endereco.get()
         email = e_email.get()
         phone = e_numero.get()
+        senha = e_senha.get()
+        papel = e_papel.get()
 
-        lista = [first_name, last_name, adress, email, phone]
+
+        lista = [first_name, last_name, adress, email, phone, senha, papel]
 
         #verificando caso algum campo esteja em branco
         for i in lista:
@@ -81,7 +41,7 @@ def novo_usuario():
                 return
         
         #inserindo os dados no bd
-        insert_user(first_name, last_name, adress, email, phone)
+        insert_user(first_name, last_name, adress, email, phone, senha, papel)
 
         messagebox.showinfo('Sucesso', 'Usuário inserido com sucesso')
 
@@ -91,7 +51,8 @@ def novo_usuario():
         e_endereco.delete(0,END)
         e_email.delete(0,END)
         e_numero.delete(0,END)
-
+        e_senha.delete(0,END)
+        e_papel.delete(0,END)
 
     app_ = Label(frameDireita, text="Inserir um novo usuário", width=50, compound=LEFT, padx=5, pady=10, font=("verdana 12 "), bg=co1, fg=co4)
     app_.grid(row=0, column=0, columnspan=4, sticky=NSEW)
@@ -129,14 +90,27 @@ def novo_usuario():
     e_numero = Entry(frameDireita, width=25, justify='left', relief="solid")
     e_numero.grid(row=6, column=1, padx=5, pady=10, sticky=NSEW)
 
+    #senha
+    l_senha = Label(frameDireita, text="senha do usuário:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_senha.grid(row=7, column=0, padx=5, pady=10, sticky=NSEW)
+    e_senha = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_senha.grid(row=7, column=1, padx=5, pady=10, sticky=NSEW)
+
+    #papel
+    l_papel = Label(frameDireita, text="papel do usuário:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_papel.grid(row=8, column=0, padx=5, pady=10, sticky=NSEW)
+    e_papel = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_papel.grid(row=8, column=1, padx=5, pady=10, sticky=NSEW)
+
     #botao de salvar
     img_salvar = Image.open('img/save.png')
     img_salvar = img_salvar.resize((18,18))
     img_salvar = ImageTk.PhotoImage(img_salvar)
     b_salvar = Button(frameDireita, command=add, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
-    b_salvar.grid(row=7, column=1, pady=10, sticky=NSEW)
+    b_salvar.grid(row=9, column=1, pady=10, sticky=NSEW)
 
-#ver usuarios
+
+# função para vizualizar novos usuarios
 def ver_usuarios():
 
     app_ = Label(frameDireita, text="Ver os usuarios", width=50, compound=LEFT, padx=5, pady=10, relief=FLAT, anchor=NW, font=('Verdana 12'), bg=co1, fg=co4)
@@ -147,7 +121,7 @@ def ver_usuarios():
     dados = get_users()
 
     #creating a treeview with dual scrollbars
-    list_header = ['ID','Nome','Sobrenome','Endereço','Email','Telefone']
+    list_header = ['ID','Nome','Sobrenome','Endereço','Email','Telefone', 'Papel']
     
     global tree
 
@@ -166,8 +140,8 @@ def ver_usuarios():
     hsb.grid(column=0, row=3, sticky='ew')
     frameDireita.grid_rowconfigure(0, weight=12)
 
-    hd=["nw","nw","nw","nw","nw","nw"]
-    h=[20,80,80,120,120,76,100]
+    hd=["nw","nw","nw","nw","nw","nw", "nw"]
+    h=[20,80,80,120,120,76,100, 76]
     n=0
 
     for col in list_header:
@@ -180,91 +154,132 @@ def ver_usuarios():
     for item in dados:
         tree.insert('', 'end', values=item)
 
-#novo livro
+
+# função para adicionar novos livros
 def novo_livro():
-    global img_salvar
+    global img_salvar, img_deletar
 
     def add():
         title = e_titulo.get()
         autor = e_autor.get()
-        publisher = e_ano.get()
+        publisher = e_editora.get()
         year = e_ano.get()
         isbn = e_isbn.get()
         valor = e_valor.get()
+        email = e_email.get()
 
-        lista = [title, autor, publisher, year, isbn, valor]
+        lista = [title, autor, publisher, year, isbn, valor, email]
 
-        #verificando caso algum campo esteja em branco
+        # Verificando caso algum campo esteja em branco
         for i in lista:
-            if i=='':
+            if i == '':
                 messagebox.showerror('Erro', 'Preencha todos os campos')
                 return
-        
-        #inserindo os dados no bd
-        insert_book(title, autor, publisher, year, isbn, valor)
 
-        messagebox.showinfo('Sucesso', 'Livro inserido com sucesso')
+        # Verificar o papel do usuário antes de inserir
+        papel = get_user_role(email)
+        if papel != 'admin':
+            messagebox.showerror('Erro', 'Acesso negado! Apenas administradores podem inserir novos livros.')
+            return
 
-        #limpando os campos após inserir
-        e_titulo.delete(0,END)
-        e_autor.delete(0,END)
-        e_editora.delete(0,END)
-        e_ano.delete(0,END)
-        e_isbn.delete(0,END)
-        e_valor.delete(0,END)
+        # Inserindo os dados no banco de dados
+        try:
+            insert_book(title, autor, publisher, year, isbn, valor, email)
+            messagebox.showinfo('Sucesso', 'Livro inserido com sucesso')
+        except Exception as e:
+            messagebox.showerror('Erro', f'Erro ao inserir livro: {e}')
 
-        
+        limpar_campos()
+
+    def delete():
+        isbn = e_isbn.get()
+        email = e_email.get()
+
+        if isbn == '':
+            messagebox.showerror('Erro', 'Por favor, insira o ISBN para deletar um livro')
+            return
+
+        # Verificar o papel do usuário antes de deletar
+        papel = get_user_role(email)
+        if papel != 'admin':
+            messagebox.showerror('Erro', 'Acesso negado! Apenas administradores podem deletar livros.')
+            return
+
+        # Deletar o livro usando o ISBN
+        try:
+            delete_book_by_isbn(isbn, email)
+            messagebox.showinfo('Sucesso', 'Livro deletado com sucesso')
+        except Exception as e:
+            messagebox.showerror('Erro', f'Erro ao deletar livro: {e}')
+
+        limpar_campos()
+
+    def limpar_campos():
+        e_titulo.delete(0, END)
+        e_autor.delete(0, END)
+        e_editora.delete(0, END)
+        e_ano.delete(0, END)
+        e_isbn.delete(0, END)
+        e_valor.delete(0, END)
+        e_email.delete(0, END)
+
+    # Botão de deletar
+    img_deletar = Image.open('img/book.png')
+    img_deletar = img_deletar.resize((18, 18))
+    img_deletar = ImageTk.PhotoImage(img_deletar)
+    b_deletar = Button(frameDireita, command=delete, image=img_deletar, compound=LEFT, anchor=NW, width=100, text=" Deletar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
+    b_deletar.grid(row=10, column=1, pady=10, sticky=NSEW)
 
     app_ = Label(frameDireita, text="Inserir um Novo livro", width=50, compound=LEFT, padx=5, pady=10, relief=FLAT, anchor=NW, font=('Verdana 12'), bg=co1, fg=co4)
     app_.grid(row=0, column=0, columnspan=3, sticky=NSEW)
-    l_linha = Label(frameDireita, width=400, height=1,anchor=NW, font=('Verdana 1 '), bg=co3, fg=co1)
+    l_linha = Label(frameDireita, width=400, height=1, anchor=NW, font=('Verdana 1 '), bg=co3, fg=co1)
     l_linha.grid(row=1, column=0, columnspan=3, sticky=NSEW)
 
-
-    #formularios
+    # Formulários
     l_titulo = Label(frameDireita, text="Título do livro*", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
     l_titulo.grid(row=2, column=0, padx=5, pady=10, sticky=NSEW)
     e_titulo = Entry(frameDireita, width=25, justify='left', relief="solid")
     e_titulo.grid(row=2, column=1, padx=5, pady=5, sticky=NSEW)
 
-    #sobrenome
-    l_autor = Label(frameDireita, text="autor do livro*:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_autor = Label(frameDireita, text="Autor do livro*:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
     l_autor.grid(row=3, column=0, padx=5, pady=5, sticky=NSEW)
     e_autor = Entry(frameDireita, width=25, justify='left', relief="solid")
     e_autor.grid(row=3, column=1, padx=5, pady=5, sticky=NSEW)
 
-    #endereco
     l_editora = Label(frameDireita, text="Editora do Livro*:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
     l_editora.grid(row=4, column=0, padx=5, pady=5, sticky=NSEW)
     e_editora = Entry(frameDireita, width=25, justify='left', relief="solid")
     e_editora.grid(row=4, column=1, padx=5, pady=5, sticky=NSEW)
 
-    #Ano de publicação
     l_ano = Label(frameDireita, text="Ano de Publicação do livro:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
     l_ano.grid(row=5, column=0, padx=5, pady=5, sticky=NSEW)
     e_ano = Entry(frameDireita, width=25, justify='left', relief="solid")
     e_ano.grid(row=5, column=1, padx=5, pady=5, sticky=NSEW)
 
-    #numero
     l_isbn = Label(frameDireita, text="ISBN do livro:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
     l_isbn.grid(row=6, column=0, padx=5, pady=10, sticky=NSEW)
     e_isbn = Entry(frameDireita, width=25, justify='left', relief="solid")
     e_isbn.grid(row=6, column=1, padx=5, pady=10, sticky=NSEW)
 
-    #valor
     l_valor = Label(frameDireita, text="Valor do livro:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
     l_valor.grid(row=7, column=0, padx=5, pady=10, sticky=NSEW)
     e_valor = Entry(frameDireita, width=25, justify='left', relief="solid")
     e_valor.grid(row=7, column=1, padx=5, pady=10, sticky=NSEW)
+
+    l_email = Label(frameDireita, text="Email do usuário:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_email.grid(row=8, column=0, padx=5, pady=10, sticky=NSEW)
+    e_email = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_email.grid(row=8, column=1, padx=5, pady=10, sticky=NSEW)
 
     #botao de salvar
     img_salvar = Image.open('img/save.png')
     img_salvar = img_salvar.resize((18,18))
     img_salvar = ImageTk.PhotoImage(img_salvar)
     b_salvar = Button(frameDireita, command=add, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
-    b_salvar.grid(row=8, column=1, pady=10, sticky=NSEW)
+    b_salvar.grid(row=9, column=1, pady=10, sticky=NSEW)
 
-#ver livros
+
+# função para ver os livros
 def ver_livros():
     # Cabeçalho da seção de livros
     app_ = Label(frameDireita, text="Todos os livros", width=50, compound=LEFT, padx=5, pady=10, relief=FLAT, anchor=NW, font=('Verdana 12'), bg=co1, fg=co4)
@@ -314,7 +329,8 @@ def ver_livros():
     total_label = Label(frameDireita, text=f"Valor total do inventário: R$ {total_estoque:.2f}", font=('Verdana 10 bold'), bg=co1, fg=co4)
     total_label.grid(row=4, column=0, columnspan=3, pady=10, sticky=NSEW)
 
-#realizar um emprestimo
+
+# função para realizar um emprestimo
 def realizar_emprestimo():
     global img_salvar
 
@@ -365,7 +381,8 @@ def realizar_emprestimo():
     b_salvar = Button(frameDireita, command=add, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
     b_salvar.grid(row=7, column=1, pady=10, sticky=NSEW)
 
-#ver os livros emprestados
+
+# função para ver os livros emprestados no momento
 def ver_livros_emprestados():
     app_ = Label(frameDireita, text="Livros emprestados no momento", width=50, compound=LEFT, padx=5, pady=10, relief=FLAT, anchor=NW, font=('Verdana 12'), bg=co1, fg=co4)
     app_.grid(row=0, column=0, columnspan=3, sticky=NSEW)
@@ -414,7 +431,8 @@ def ver_livros_emprestados():
     for item in dados:
         tree.insert('', 'end', values=item)
 
-#devolução de um livro
+
+# função para devolução de um livro
 def devolucao_emprestimo():
     global img_salvar
 
@@ -517,55 +535,132 @@ def control(i):
         #chamando a funcao de devolucao
         devolucao_emprestimo()
 
- 
-#Menu
-#novo usuario
-img_usuario = Image.open('img/add.png')
-img_usuario = img_usuario.resize((18,18))
-img_usuario = ImageTk.PhotoImage(img_usuario)
-b_usuario = Button(frameEsquerda, command=lambda:control('novo_usuario'),  image=img_usuario, compound=LEFT, anchor=NW, text=" Novo usuário", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
-b_usuario.grid(row=0, column=0, sticky=NSEW, padx=5, pady=6)
 
-#novo livro
-img_novo_livro = Image.open('img/add.png')
-img_novo_livro = img_novo_livro.resize((18,18))
-img_novo_livro = ImageTk.PhotoImage(img_novo_livro)
-b_novo_livro = Button(frameEsquerda, command=lambda:control('novo_livro'), image=img_novo_livro, compound=LEFT, anchor=NW, text=" Novo Livro", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
-b_novo_livro.grid(row=1, column=0, sticky=NSEW, padx=5, pady=6)
+# tela do menu principal
+def janela_principal():
+    janela = Tk()
+    janela.title("")
+    janela.geometry('800x600')
+    janela.configure(background=co1)
+    janela.resizable(width=False, height=False)
 
-#Ver livros
-img_ver_livro = Image.open('img/book.png')
-img_ver_livro = img_ver_livro.resize((18,18))
-img_ver_livro = ImageTk.PhotoImage(img_ver_livro)
-b_ver_livro = Button(frameEsquerda, command=lambda:control('ver_livro'), image=img_ver_livro, compound=LEFT, anchor=NW, text=" Exibir todos os Livro", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
-b_ver_livro.grid(row=2, column=0, sticky=NSEW, padx=5, pady=6)
+    style = Style(janela)
+    style.theme_use("clam")
 
-#Ver usuarios
-img_ver_usuarios = Image.open('img/user.png')
-img_ver_usuarios = img_ver_usuarios.resize((18,18))
-img_ver_usuarios = ImageTk.PhotoImage(img_ver_usuarios)
-b_ver_usuarios = Button(frameEsquerda, image=img_ver_usuarios, command=lambda:control('ver_usuarios'), compound=LEFT, anchor=NW, text=" Exibir todos os usuarios", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
-b_ver_usuarios.grid(row=3, column=0, sticky=NSEW, padx=5, pady=6)
+    #frames
+    global frameCima
+    frameCima = Frame(janela, width=770, height=50, bg=co6, relief="flat")
+    frameCima.grid(row=0, column=0, columnspan=2, sticky=NSEW)
 
-#Realizar emprestimo
-img_emprestimo = Image.open('img/purchase.png')
-img_emprestimo = img_emprestimo.resize((18,18))
-img_emprestimo = ImageTk.PhotoImage(img_emprestimo)
-b_emprestimo = Button(frameEsquerda, command=lambda:control('emprestimo'), image=img_emprestimo, compound=LEFT, anchor=NW, text=" Realizar um emprestimo", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
-b_emprestimo.grid(row=4, column=0, sticky=NSEW, padx=5, pady=6)
+    global frameEsquerda
+    frameEsquerda = Frame(janela, width=150, height=265, bg=co4, relief="solid")
+    frameEsquerda.grid(row=1, column=0, sticky=NSEW)
 
-#Realizar devolucao
-img_devolucao = Image.open('img/update.png')
-img_devolucao = img_devolucao.resize((18,18))
-img_devolucao = ImageTk.PhotoImage(img_devolucao)
-b_devolucao = Button(frameEsquerda, command=lambda:control('retorno'), image=img_devolucao, compound=LEFT, anchor=NW, text=" Devolucao de um emprestimo", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
-b_devolucao.grid(row=5, column=0, sticky=NSEW, padx=5, pady=6)
+    global frameDireita
+    frameDireita = Frame(janela, width=600, height=265, bg=co1, relief="raised")
+    frameDireita.grid(row=1, column=1, sticky=NSEW)
 
-#Ver livros emprestados
-img_livros_emprestados = Image.open('img/purchase.png')
-img_livros_emprestados = img_livros_emprestados.resize((18,18))
-img_livros_emprestados = ImageTk.PhotoImage(img_livros_emprestados)
-b_livros_emprestados = Button(frameEsquerda, command=lambda:control('ver_livros_emprestado'), image=img_livros_emprestados, compound=LEFT, anchor=NW, text=" Livros emprestados no momento", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
-b_livros_emprestados.grid(row=6, column=0, sticky=NSEW, padx=5, pady=6)
 
-janela.mainloop()
+    #logo
+    #abrindo a imagem
+    app_img = Image.open('img/book.png')
+    app_img = app_img.resize((40,40))
+    app_img = ImageTk.PhotoImage(app_img)
+
+    app_logo = Label(frameCima, image=app_img, width=1000, compound=LEFT, padx=5, anchor=NW, fg=co1, bg=co6)
+    app_logo.place(x=5, y=0)
+
+    app_ = Label(frameCima, text="Sistema de Gerenciamento de Livros", compound=LEFT, padx=5, anchor = NW, fg=co1, bg=co6, font=("Verdana 15 bold"))
+    app_.place(x=50, y=7)
+
+    app_linha = Label(frameCima, width=770, height=1, padx=5, anchor=NW, font=("Verdana"), fg=co1, bg=co3)
+    app_linha.place(x=0, y=47)
+
+    #Menu
+    #novo usuario
+    img_usuario = Image.open('img/add.png')
+    img_usuario = img_usuario.resize((18,18))
+    img_usuario = ImageTk.PhotoImage(img_usuario)
+    b_usuario = Button(frameEsquerda, command=lambda:control('novo_usuario'),  image=img_usuario, compound=LEFT, anchor=NW, text=" Novo usuário", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
+    b_usuario.grid(row=0, column=0, sticky=NSEW, padx=5, pady=6)
+
+    #novo livro
+    img_novo_livro = Image.open('img/add.png')
+    img_novo_livro = img_novo_livro.resize((18,18))
+    img_novo_livro = ImageTk.PhotoImage(img_novo_livro)
+    b_novo_livro = Button(frameEsquerda, command=lambda:control('novo_livro'), image=img_novo_livro, compound=LEFT, anchor=NW, text=" Novo Livro", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
+    b_novo_livro.grid(row=1, column=0, sticky=NSEW, padx=5, pady=6)
+
+    #Ver livros
+    img_ver_livro = Image.open('img/book.png')
+    img_ver_livro = img_ver_livro.resize((18,18))
+    img_ver_livro = ImageTk.PhotoImage(img_ver_livro)
+    b_ver_livro = Button(frameEsquerda, command=lambda:control('ver_livro'), image=img_ver_livro, compound=LEFT, anchor=NW, text=" Exibir todos os Livro", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
+    b_ver_livro.grid(row=2, column=0, sticky=NSEW, padx=5, pady=6)
+
+    #Ver usuarios
+    img_ver_usuarios = Image.open('img/user.png')
+    img_ver_usuarios = img_ver_usuarios.resize((18,18))
+    img_ver_usuarios = ImageTk.PhotoImage(img_ver_usuarios)
+    b_ver_usuarios = Button(frameEsquerda, image=img_ver_usuarios, command=lambda:control('ver_usuarios'), compound=LEFT, anchor=NW, text=" Exibir todos os usuarios", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
+    b_ver_usuarios.grid(row=3, column=0, sticky=NSEW, padx=5, pady=6)
+
+    #Realizar emprestimo
+    img_emprestimo = Image.open('img/purchase.png')
+    img_emprestimo = img_emprestimo.resize((18,18))
+    img_emprestimo = ImageTk.PhotoImage(img_emprestimo)
+    b_emprestimo = Button(frameEsquerda, command=lambda:control('emprestimo'), image=img_emprestimo, compound=LEFT, anchor=NW, text=" Realizar um emprestimo", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
+    b_emprestimo.grid(row=4, column=0, sticky=NSEW, padx=5, pady=6)
+
+    #Realizar devolucao
+    img_devolucao = Image.open('img/update.png')
+    img_devolucao = img_devolucao.resize((18,18))
+    img_devolucao = ImageTk.PhotoImage(img_devolucao)
+    b_devolucao = Button(frameEsquerda, command=lambda:control('retorno'), image=img_devolucao, compound=LEFT, anchor=NW, text=" Devolucao de um emprestimo", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
+    b_devolucao.grid(row=5, column=0, sticky=NSEW, padx=5, pady=6)
+
+    #Ver livros emprestados
+    img_livros_emprestados = Image.open('img/purchase.png')
+    img_livros_emprestados = img_livros_emprestados.resize((18,18))
+    img_livros_emprestados = ImageTk.PhotoImage(img_livros_emprestados)
+    b_livros_emprestados = Button(frameEsquerda, command=lambda:control('ver_livros_emprestado'), image=img_livros_emprestados, compound=LEFT, anchor=NW, text=" Livros emprestados no momento", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
+    b_livros_emprestados.grid(row=6, column=0, sticky=NSEW, padx=5, pady=6)
+
+    janela.mainloop()
+
+
+# Função que executa a tela de login
+def tela_login():
+    def fazer_login():
+        usuario = entry_usuario.get()
+        senha = entry_senha.get()
+        
+        if validar_login(usuario, senha):
+            messagebox.showinfo("Login", "Login bem-sucedido!")
+            login_screen.destroy()  # Fecha a tela de login
+            janela_principal()  # Abre a tela principal do sistema
+        else:
+            messagebox.showerror("Erro", "Usuário ou senha incorretos!")
+
+    # Criando a janela de login
+    login_screen = Tk()
+    login_screen.title("Login")
+
+    # Widgets de login
+    Label(login_screen, text="Usuário:").pack(pady=5)
+    entry_usuario = Entry(login_screen)
+    entry_usuario.pack(pady=5)
+
+    Label(login_screen, text="Senha:").pack(pady=5)
+    entry_senha = Entry(login_screen, show='*')  # Campo de senha oculto
+    entry_senha.pack(pady=5)
+
+    Button(login_screen, text="Entrar", command=fazer_login).pack(pady=20)
+
+    login_screen.geometry("300x200")
+    login_screen.mainloop()
+
+
+# Executa a tela de login ao iniciar o sistema
+if __name__ == "__main__":
+    tela_login()

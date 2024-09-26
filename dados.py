@@ -1,42 +1,48 @@
 import sqlite3
 
 # Conectar ao BD ou criar um novo
-con = sqlite3.connect('dados.db')
+with sqlite3.connect('dados.db') as con:
 
-# Criar tabela de livros
-con.execute('''
-CREATE TABLE livros(
-    id INTEGER PRIMARY KEY,
-    titulo TEXT,
-    autor TEXT,
-    editora TEXT,
-    ano_publicacao INTEGER,
-    isbn TEXT,
-    valor INTEGER
-)''')
+    # Criar tabela de livros, se não existir
+    con.execute('''
+    CREATE TABLE IF NOT EXISTS livros (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        titulo TEXT NOT NULL,
+        autor TEXT NOT NULL,
+        editora TEXT NOT NULL,
+        ano_publicacao INTEGER,
+        isbn TEXT UNIQUE NOT NULL,
+        valor INTEGER
+    )
+    ''')
 
-# Criando tabela de usuários
-con.execute('''
-CREATE TABLE usuarios(
-    id INTEGER PRIMARY KEY,
-    nome TEXT,
-    sobrenome TEXT,
-    endereco TEXT,
-    email TEXT,
-    telefone TEXT
-)''')
+    # Criar tabela de usuários, se não existir
+    con.execute('''
+    CREATE TABLE IF NOT EXISTS usuarios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        sobrenome TEXT NOT NULL,
+        endereco TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        telefone TEXT NOT NULL,
+        senha TEXT NOT NULL,
+        papel TEXT NOT NULL CHECK(papel IN ('admin', 'usuario'))
+    )
+    ''')
 
-# Criando a tabela de empréstimos
+# Criar tabela de empréstimos, se não existir
 con.execute('''
-CREATE TABLE emprestimos(
+CREATE TABLE IF NOT EXISTS emprestimos (
     id INTEGER PRIMARY KEY,
     id_livro INTEGER,
     id_usuario INTEGER,
     data_emprestimo TEXT,
     data_devolucao TEXT,
     FOREIGN KEY(id_livro) REFERENCES livros(id),
-    FOREIGN KEY(id_usuario) REFERENCES usuarios(id)  -- Corrigido o nome da tabela para 'usuarios'
-)''')
+    FOREIGN KEY(id_usuario) REFERENCES usuarios(id)
+)
+''')
+
 
 # Fechar a conexão
 con.close()
