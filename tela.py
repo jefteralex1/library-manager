@@ -482,6 +482,105 @@ def devolucao_emprestimo():
     b_salvar = Button(frameDireita, command=add, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
     b_salvar.grid(row=7, column=1, pady=10, sticky=NSEW)
 
+def editar_livro():
+    global img_salvar
+
+    def edit():
+        isbn = e_isbn.get()
+        titulo = e_titulo.get()
+        autor = e_autor.get()
+        editora = e_editora.get()
+        ano_publicacao = e_ano_publicacao.get()
+        valor = e_valor.get()
+        email_usuario = e_email_usuario.get()
+
+        # Verificando se o ISBN foi fornecido
+        if isbn == '':
+            messagebox.showerror('Erro', 'Digite o ISBN do livro a ser editado.')
+            return
+        
+        # Verificando se o e-mail foi fornecido
+        if email_usuario == '':
+            messagebox.showerror('Erro', 'Digite o e-mail do usuário.')
+            return
+        
+        # Verificando se o e-mail é de um administrador
+        papel = get_user_role(email_usuario)
+        if papel != 'admin':
+            messagebox.showerror('Erro', 'Acesso negado! Apenas administradores podem inserir novos livros.')
+            return
+        
+        # Atualizando o livro no banco de dados com os campos fornecidos
+        edit_book(isbn, titulo=titulo if titulo else None, autor=autor if autor else None, 
+                  editora=editora if editora else None, ano_publicacao=ano_publicacao if ano_publicacao else None, 
+                  valor=valor if valor else None, email_usuario=email_usuario)
+
+        messagebox.showinfo('Sucesso', 'Livro atualizado com sucesso')
+
+        # Limpando os campos após inserir
+        e_isbn.delete(0, END)
+        e_titulo.delete(0, END)
+        e_autor.delete(0, END)
+        e_editora.delete(0, END)
+        e_ano_publicacao.delete(0, END)
+        e_valor.delete(0, END)
+        e_email_usuario.delete(0, END)
+
+    # Título da seção
+    app_ = Label(frameDireita, text="Editar Livro", width=50, compound=LEFT, padx=5, pady=10, relief=FLAT, anchor=NW, font=('Verdana 12'), bg=co1, fg=co4)
+    app_.grid(row=0, column=0, columnspan=3, sticky=NSEW)
+    l_linha = Label(frameDireita, width=400, height=1, anchor=NW, font=('Verdana 1 '), bg=co3, fg=co1)
+    l_linha.grid(row=1, column=0, columnspan=3, sticky=NSEW)
+
+    # ISBN
+    l_isbn = Label(frameDireita, text="Digite o ISBN do livro*", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_isbn.grid(row=2, column=0, padx=5, pady=10, sticky=NSEW)
+    e_isbn = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_isbn.grid(row=2, column=1, padx=5, pady=5, sticky=NSEW)
+
+    # Título (opcional)
+    l_titulo = Label(frameDireita, text="Novo título (opcional):", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_titulo.grid(row=3, column=0, padx=5, pady=5, sticky=NSEW)
+    e_titulo = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_titulo.grid(row=3, column=1, padx=5, pady=5, sticky=NSEW)
+
+    # Autor (opcional)
+    l_autor = Label(frameDireita, text="Novo autor (opcional):", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_autor.grid(row=4, column=0, padx=5, pady=5, sticky=NSEW)
+    e_autor = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_autor.grid(row=4, column=1, padx=5, pady=5, sticky=NSEW)
+
+    # Editora (opcional)
+    l_editora = Label(frameDireita, text="Nova editora (opcional):", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_editora.grid(row=5, column=0, padx=5, pady=5, sticky=NSEW)
+    e_editora = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_editora.grid(row=5, column=1, padx=5, pady=5, sticky=NSEW)
+
+    # Ano de publicação (opcional)
+    l_ano_publicacao = Label(frameDireita, text="Novo ano de publicação (opcional):", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_ano_publicacao.grid(row=6, column=0, padx=5, pady=5, sticky=NSEW)
+    e_ano_publicacao = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_ano_publicacao.grid(row=6, column=1, padx=5, pady=5, sticky=NSEW)
+
+    # Valor (opcional)
+    l_valor = Label(frameDireita, text="Novo valor (opcional):", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_valor.grid(row=7, column=0, padx=5, pady=5, sticky=NSEW)
+    e_valor = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_valor.grid(row=7, column=1, padx=5, pady=5, sticky=NSEW)
+
+    # E-mail do usuário
+    l_email_usuario = Label(frameDireita, text="Digite o e-mail do administrador*:", anchor=NW, font=("Ivy 10 "), bg=co1, fg=co4)
+    l_email_usuario.grid(row=8, column=0, padx=5, pady=5, sticky=NSEW)
+    e_email_usuario = Entry(frameDireita, width=25, justify='left', relief="solid")
+    e_email_usuario.grid(row=8, column=1, padx=5, pady=5, sticky=NSEW)
+
+    # Botão de salvar
+    img_salvar = Image.open('img/save.png')
+    img_salvar = img_salvar.resize((18, 18))
+    img_salvar = ImageTk.PhotoImage(img_salvar)
+    b_salvar = Button(frameDireita, command=edit, image=img_salvar, compound=LEFT, anchor=NW, width=100, text=" Salvar ", bg=co1, fg=co4, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
+    b_salvar.grid(row=9, column=1, pady=10, sticky=NSEW)
+
 
 #funcao para controlar o menu
 def control(i):
@@ -534,6 +633,12 @@ def control(i):
             widget.destroy()
         #chamando a funcao de devolucao
         devolucao_emprestimo()
+    
+    if i == 'editar_livros':
+        for widget in frameDireita.winfo_children():
+            widget.destroy()
+        #chamando a funcao de editar
+        editar_livro()
 
 
 # tela do menu principal
@@ -625,6 +730,13 @@ def janela_principal():
     img_livros_emprestados = ImageTk.PhotoImage(img_livros_emprestados)
     b_livros_emprestados = Button(frameEsquerda, command=lambda:control('ver_livros_emprestado'), image=img_livros_emprestados, compound=LEFT, anchor=NW, text=" Livros emprestados no momento", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
     b_livros_emprestados.grid(row=6, column=0, sticky=NSEW, padx=5, pady=6)
+
+    #Editar livros
+    img_editar_livros = Image.open('img/book.png')
+    img_editar_livros = img_editar_livros.resize((18,18))
+    img_editar_livros = ImageTk.PhotoImage(img_editar_livros)
+    b_editar_livros = Button(frameEsquerda, command=lambda:control('editar_livros'), image=img_editar_livros, compound=LEFT, anchor=NW, text=" Editar um livro", bg=co4, fg=co1, font=("Ivy 11"), overrelief=RIDGE, relief=GROOVE)
+    b_editar_livros.grid(row=7, column=0, sticky=NSEW, padx=5, pady=6)
 
     janela.mainloop()
 

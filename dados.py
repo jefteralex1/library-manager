@@ -43,6 +43,5 @@ CREATE TABLE IF NOT EXISTS emprestimos (
 )
 ''')
 
-
-# Fechar a conexão
+# Fechar a conexão-
 con.close()

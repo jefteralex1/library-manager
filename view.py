@@ -123,4 +123,39 @@ def validar_login(usuario, senha):
         c.execute("SELECT * FROM usuarios WHERE nome=? AND senha=?", (usuario, senha))
         result = c.fetchone()
     
-    return result is not None  
+    return result is not None
+
+
+# Função para editar livro (Apenas Admin)
+def edit_book(isbn, titulo=None, autor=None, editora=None, ano_publicacao=None, valor=None, email_usuario=None):
+    # Verifica o papel do usuário
+    papel = get_user_role(email_usuario)
+    if papel != 'admin':
+        print("Acesso negado! Apenas administradores podem editar livros.")
+        return
+    
+    with connect() as conn:
+        # Verifica se o livro existe no banco de dados
+        c = conn.cursor()
+        c.execute("SELECT * FROM livros WHERE isbn = ?", (isbn,))
+        livro = c.fetchone()
+        if not livro:
+            print("Livro não encontrado.")
+            return
+
+        # Atualiza os campos apenas se valores novos forem fornecidos
+        novo_titulo = titulo if titulo else livro[1]  # Índice 1 corresponde ao título no banco de dados
+        novo_autor = autor if autor else livro[2]     # Índice 2 corresponde ao autor
+        nova_editora = editora if editora else livro[3]  # Índice 3 para a editora
+        novo_ano_publicacao = ano_publicacao if ano_publicacao else livro[4]  # Índice 4 para o ano
+        novo_valor = valor if valor else livro[6]  # Índice 6 para o valor
+
+        # Atualizando o livro no banco de dados
+        c.execute("""
+            UPDATE livros
+            SET titulo = ?, autor = ?, editora = ?, ano_publicacao = ?, valor = ?
+            WHERE isbn = ?
+        """, (novo_titulo, novo_autor, nova_editora, novo_ano_publicacao, novo_valor, isbn))
+        
+        conn.commit()
+        print("Livro atualizado com sucesso!")
